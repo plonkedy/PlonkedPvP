@@ -1,0 +1,198 @@
+# ======================================================================
+#  PlonkedPvP  -  by Plonked
+#
+#  All text uses MiniMessage formatting:
+#  https://docs.advntr.dev/minimessage/format.html
+#  Arenas themselves are stored in arenas.yml (managed by the plugin).
+# ======================================================================
+
+general:
+  # Shown in front of chat messages
+  prefix: "<dark_gray>[<red><bold>PvP</bold><dark_gray>] <gray>"
+  # How often (ticks) players are checked for entering/leaving an arena
+  check-interval-ticks: 5
+
+selection:
+  # Automatically create the arena as soon as /pvp1 and /pvp2 are both set.
+  # If false, use /pvparena create [name] after setting both points.
+  auto-create: true
+  # Name used for auto-created arenas (%d = number)
+  default-name-format: "arena%d"
+
+arena:
+  # true  = arena covers the full world height between the two points (ignores Y)
+  # false = arena is the exact cuboid between the two points (like WorldEdit)
+  full-height: true
+
+  # ---- Death handling ----
+  keep-inventory-on-death: true
+  keep-exp-on-death: true
+  # Make sure nothing is dropped when someone dies in the arena
+  clear-death-drops: true
+  hide-death-messages: false
+  # Respawn at the arena spawn (set with /pvparena setspawn) if one exists
+  respawn-at-arena-spawn: true
+
+  # ---- Gear protection / replenishing ----
+  # Items never lose durability in the arena
+  no-durability-loss: true
+  # Hunger never goes down in the arena
+  no-hunger: true
+  no-fall-damage: false
+  prevent-mob-spawning: true
+  # Anything used/consumed/thrown/broken is given back (blocks, arrows, pearls,
+  # golden apples, potions, buckets, totems, broken tools ...) based on what
+  # the player had when they ENTERED the arena.
+  replenish-items: true
+  replenish-interval-ticks: 10
+  # When leaving, put the inventory back EXACTLY as it was on entry
+  # (removes anything gained inside). Off = only top up missing items.
+  restore-inventory-on-leave: false
+
+  # ---- Item/Container restrictions (stops duping/looting) ----
+  prevent-item-drop: true
+  prevent-item-pickup: true
+  prevent-container-access: true
+  # Inventory types players CAN still open while in the arena
+  allowed-inventories:
+    - WORKBENCH
+
+blocks:
+  allow-place: true
+  # Water/lava buckets
+  allow-liquids: true
+  # NONE = nobody can break blocks, PLACED_ONLY = only blocks placed by players, ANY = anything
+  break-mode: PLACED_ONLY
+  # Do broken blocks drop items?
+  drop-items: false
+  # false = explosions hurt players but do not destroy blocks
+  explosion-block-damage: false
+  # false = fire spreading / lava ignition / lightning fire is cancelled
+  allow-fire-spread: false
+
+cleanup:
+  enabled: true
+  # Seconds between cleanups (300 = 5 minutes)
+  interval-seconds: 300
+  # Restore every block/water/lava changed in the arena to how it was originally
+  clear-blocks: true
+  # Remove the entity types below from inside the arenas
+  clear-entities: true
+  remove-entities:
+    - item
+    - arrow
+    - spectral_arrow
+    - trident
+    - experience_orb
+    - falling_block
+  # Put blocks back when the plugin/server shuts down
+  restore-on-disable: true
+  # Seconds remaining at which players INSIDE an arena get the countdown message
+  countdown-times: [60, 30, 10, 5, 4, 3, 2, 1]
+
+# ----------------------------------------------------------------------
+# Notifications.  display can be one or more of: CHAT, ACTIONBAR, TITLE
+#   CHAT/ACTIONBAR use "message"; TITLE uses "title" + "subtitle".
+#   Each one can be turned off with enabled: false
+# ----------------------------------------------------------------------
+notifications:
+  enter:
+    enabled: true
+    display: [CHAT]
+    message: "<green>You entered the PvP arena <white><arena></white><green>. Your gear is protected and replenishes here."
+    sound:
+      enabled: false
+      name: "entity.experience_orb.pickup"
+      volume: 1.0
+      pitch: 1.0
+
+  leave:
+    enabled: true
+    display: [CHAT]
+    message: "<red>You left the PvP arena <white><arena></white><red>."
+    sound:
+      enabled: false
+      name: "entity.experience_orb.pickup"
+      volume: 1.0
+      pitch: 0.8
+
+  countdown:
+    enabled: true
+    display: [CHAT]
+    message: "<yellow>Placed blocks, water and dropped items in <white><arena></white><yellow> will be cleared in <red><bold><seconds></bold><yellow> second(s)!"
+    sound:
+      enabled: true
+      name: "block.note_block.pling"
+      volume: 0.6
+      pitch: 1.2
+
+  cleanup-done:
+    enabled: true
+    display: [CHAT]
+    message: "<green>The arena was cleared of placed blocks, water and dropped items!"
+    sound:
+      enabled: false
+      name: "entity.item.pickup"
+      volume: 1.0
+      pitch: 1.0
+
+  kill:
+    enabled: true
+    display: [TITLE]
+    message: "<red>You killed <white><victim>"
+    title: "<red><bold>KILL!"
+    subtitle: "<gray>You killed <white><victim>"
+    fade-in: 5
+    stay: 30
+    fade-out: 10
+    sound:
+      enabled: true
+      name: "entity.player.levelup"
+      volume: 0.8
+      pitch: 1.5
+
+  death:
+    enabled: true
+    display: [ACTIONBAR]
+    message: "<red>You were killed by <white><killer>"
+    sound:
+      enabled: false
+      name: "entity.wither.hurt"
+      volume: 1.0
+      pitch: 1.0
+
+  # Shown when something is blocked (e.g. dropping items)
+  denied:
+    enabled: true
+    display: [ACTIONBAR]
+    message: "<red>You can't <action> in the arena."
+    sound:
+      enabled: false
+      name: "block.note_block.bass"
+      volume: 1.0
+      pitch: 1.0
+
+# ----------------------------------------------------------------------
+# Command messages (sent to staff)
+# ----------------------------------------------------------------------
+messages:
+  no-permission: "<red>You don't have permission to do that."
+  player-only: "<red>Only players can use this."
+  usage: "<yellow>Usage: /pvparena <create [name]|list|delete <name>|rename <old> <new>|setspawn [name]|clean [name]|reload>"
+  pos1-set: "<green>Position 1 set to <white><x>, <y>, <z></white> <gray>(<world>)"
+  pos2-set: "<green>Position 2 set to <white><x>, <y>, <z></white> <gray>(<world>)"
+  need-both-points: "<red>Set both points first with /pvp1 and /pvp2."
+  worlds-differ: "<red>Both points must be in the same world."
+  invalid-name: "<red>Arena names may only contain letters, numbers, - and _ (max 32)."
+  arena-exists: "<red>An arena called <white><arena></white><red> already exists."
+  arena-created: "<green>PvP arena <white><arena></white><green> created <gray>(<size>)<green>. Use <white>/pvparena setspawn</white><green> inside it to set a respawn point."
+  arena-deleted: "<green>Arena <white><arena></white><green> deleted."
+  arena-renamed: "<green>Arena <white><old></white><green> renamed to <white><arena></white><green>."
+  arena-not-found: "<red>No arena called <white><arena></white><red>."
+  not-in-arena: "<red>Stand inside an arena or give its name."
+  spawn-set: "<green>Respawn point for <white><arena></white><green> set to your location."
+  list-header: "<yellow>PvP arenas (<count>):"
+  list-empty: "<yellow>No arenas yet. Use /pvp1 and /pvp2 to create one."
+  list-entry: "<gray> - <white><arena></white> <dark_gray>[<world>] <gray><min> -> <max>"
+  cleaned: "<green>Cleaned <white><arena></white><green>."
+  reloaded: "<green>Config reloaded."

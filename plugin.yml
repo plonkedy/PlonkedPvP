@@ -1,0 +1,25 @@
+name: PlonkedPvP
+version: 1.0.0
+main: dev.plonked.pvparena.PvpArenaPlugin
+api-version: '1.21'
+author: Plonked
+authors: [Plonked]
+description: Create PvP arenas with two points. Keep-inventory, auto-replenishing gear, timed arena cleanup and kill titles.
+commands:
+  pvp1:
+    description: Set arena position 1 at your location
+    usage: /pvp1
+  pvp2:
+    description: Set arena position 2 at your location
+    usage: /pvp2
+  pvparena:
+    description: Manage PvP arenas
+    usage: /pvparena <create|list|delete|rename|setspawn|clean|reload>
+    aliases: [pvpa]
+permissions:
+  pvparena.admin:
+    description: Create and manage PvP arenas
+    default: op
+  pvparena.bypass:
+    description: Ignore arena build/drop/container restrictions
+    default: false
