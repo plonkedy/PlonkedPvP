@@ -1,0 +1,41 @@
+name: Build PlonkedPvP
+
+on:
+  push:
+    branches: [ main, master ]
+    tags: [ 'v*' ]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write   # needed so tagged builds can publish a GitHub Release
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B clean package
+
+      - name: Upload plugin jar
+        uses: actions/upload-artifact@v4
+        with:
+          name: PlonkedPvP
+          path: target/PlonkedPvP.jar
+
+      # Pushing a tag like v1.0.0 creates a Release with the jar attached
+      - name: Publish release
+        if: startsWith(github.ref, 'refs/tags/v')
+        uses: softprops/action-gh-release@v2
+        with:
+          files: target/PlonkedPvP.jar
